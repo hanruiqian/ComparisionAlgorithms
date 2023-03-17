@@ -24,9 +24,27 @@ class MLP(nn.Module):
         x = self.layer_hidden(x)
         return self.softmax(x)
 
-class CNNFemnist(nn.Module):
+# class CNNFemnist(nn.Module):
+#     def __init__(self, args):
+#         super(CNNFemnist, self).__init__()
+#         self.conv1 = nn.Conv2d(args.num_channels, 10, kernel_size=3)
+#         self.conv2 = nn.Conv2d(10, args.out_channels, kernel_size=5)
+#         self.conv2_drop = nn.Dropout2d()
+#         self.fc1 = nn.Linear(int(16820/20*args.out_channels), 50)
+#         self.fc2 = nn.Linear(50, args.num_classes)
+
+#     def forward(self, x):
+#         x = F.relu(F.max_pool2d(self.conv1(x), 2))
+#         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+#         x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+#         x1 = F.relu(self.fc1(x))
+#         x = F.dropout(x1, training=self.training)
+#         x = self.fc2(x)
+#         return F.log_softmax(x, dim=1), x1
+    
+class CNNFemnist_1(nn.Module):
     def __init__(self, args):
-        super(CNNFemnist, self).__init__()
+        super(CNNFemnist_1, self).__init__()
         self.conv1 = nn.Conv2d(args.num_channels, 10, kernel_size=3)
         self.conv2 = nn.Conv2d(10, args.out_channels, kernel_size=5)
         self.conv2_drop = nn.Dropout2d()
@@ -41,10 +59,74 @@ class CNNFemnist(nn.Module):
         x = F.dropout(x1, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1), x1
-
-class CNNMnist(nn.Module):
+    
+class CNNFemnist_2(nn.Module):
     def __init__(self, args):
-        super(CNNMnist, self).__init__()
+        super(CNNFemnist_2, self).__init__()
+        self.conv1 = nn.Conv2d(args.num_channels, 16, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv2d(32, args.out_channels, kernel_size=5)
+        self.conv2_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(int(4704/4*args.out_channels), 50)
+        self.fc2 = nn.Linear(50, args.num_classes)
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = F.relu(self.conv3(x))
+        x = F.max_pool2d(x, kernel_size=x.shape[2:])
+        x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+        x1 = F.relu(self.fc1(x))
+        x = F.dropout(x1, training=self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1), x1
+
+class CNNFemnist_3(nn.Module):
+    def __init__(self, args):
+        super(CNNFemnist_3, self).__init__()
+        self.conv1 = nn.Conv2d(args.num_channels, 16, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
+        self.conv3 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
+        self.conv4 = nn.Conv2d(64, args.out_channels, kernel_size=5)
+        self.conv2_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(int(9408/4*args.out_channels), 50)
+        self.fc2 = nn.Linear(50, args.num_classes)
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = F.relu(F.max_pool2d(self.conv3(x), 2))
+        x = F.relu(self.conv4(x))
+        x = F.max_pool2d(x, kernel_size=x.shape[2:])
+        x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+        x1 = F.relu(self.fc1(x))
+        x = F.dropout(x1, training=self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1), x1
+
+CNNFemnistClasses = [CNNFemnist_1, CNNFemnist_2, CNNFemnist_3]
+
+# class CNNMnist(nn.Module):
+#     def __init__(self, args):
+#         super(CNNMnist, self).__init__()
+#         self.conv1 = nn.Conv2d(args.num_channels, 10, kernel_size=5)
+#         self.conv2 = nn.Conv2d(10, args.out_channels, kernel_size=5)
+#         self.conv2_drop = nn.Dropout2d()
+#         self.fc1 = nn.Linear(int(320/20*args.out_channels), 50)
+#         self.fc2 = nn.Linear(50, args.num_classes)
+
+#     def forward(self, x):
+#         x = F.relu(F.max_pool2d(self.conv1(x), 2))
+#         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+#         x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+#         x1 = F.relu(self.fc1(x))
+#         x = F.dropout(x1, training=self.training)
+#         x = self.fc2(x)
+#         return F.log_softmax(x, dim=1), x1
+
+class CNNMnist_1(nn.Module):
+    def __init__(self, args):
+        super(CNNMnist_1, self).__init__()
         self.conv1 = nn.Conv2d(args.num_channels, 10, kernel_size=5)
         self.conv2 = nn.Conv2d(10, args.out_channels, kernel_size=5)
         self.conv2_drop = nn.Dropout2d()
@@ -59,6 +141,51 @@ class CNNMnist(nn.Module):
         x = F.dropout(x1, training=self.training)
         x = self.fc2(x)
         return F.log_softmax(x, dim=1), x1
+    
+class CNNMnist_2(nn.Module):
+    def __init__(self, args):
+        super(CNNMnist_2, self).__init__()
+        self.conv1 = nn.Conv2d(args.num_channels, 10, kernel_size=5)
+        self.conv2 = nn.Conv2d(10, args.out_channels, kernel_size=5)
+        self.conv3 = nn.Conv2d(args.out_channels, args.out_channels*2, kernel_size=5)
+        self.conv2_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(int(320/20*args.out_channels*2), 50)
+        self.fc2 = nn.Linear(50, args.num_classes)
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = F.relu(F.max_pool2d(self.conv3(x), 2))
+        x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+        x1 = F.relu(self.fc1(x))
+        x = F.dropout(x1, training=self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1), x1
+    
+class CNNMnist_3(nn.Module):
+    def __init__(self, args):
+        super(CNNMnist_3, self).__init__()
+        self.conv1 = nn.Conv2d(args.num_channels, 10, kernel_size=5)
+        self.conv2 = nn.Conv2d(10, args.out_channels, kernel_size=5)
+        self.conv3 = nn.Conv2d(args.out_channels, args.out_channels*2, kernel_size=5)
+        self.conv4 = nn.Conv2d(args.out_channels*2, args.out_channels*4, kernel_size=5)
+        self.conv4_drop = nn.Dropout2d()
+        self.fc1 = nn.Linear(int(320/20*args.out_channels*4), 50)
+        self.fc2 = nn.Linear(50, args.num_classes)
+
+    def forward(self, x):
+        x = F.relu(F.max_pool2d(self.conv1(x), 2))
+        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
+        x = F.relu(F.max_pool2d(self.conv3(x), 2))
+        x = F.relu(F.max_pool2d(self.conv4_drop(self.conv4(x)), 2))
+        x = x.view(-1, x.shape[1]*x.shape[2]*x.shape[3])
+        x1 = F.relu(self.fc1(x))
+        x = F.dropout(x1, training=self.training)
+        x = self.fc2(x)
+        return F.log_softmax(x, dim=1), x1
+
+CNNMnistClasses = [CNNMnist_1, CNNMnist_2, CNNMnist_3]
+
 
 class CNNFashion_Mnist(nn.Module):
     def __init__(self, args):
@@ -81,6 +208,8 @@ class CNNFashion_Mnist(nn.Module):
         out = out.view(out.size(0), -1)
         out = self.fc(out)
         return out
+    
+
 
 class CNNCifar(nn.Module):
     def __init__(self, args):

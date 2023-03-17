@@ -21,10 +21,10 @@ mod_dir = (Path(__file__).parent / ".." / "lib" / "models").resolve()
 if str(mod_dir) not in sys.path:
     sys.path.insert(0, str(mod_dir))
 
-from resnet import resnet18
+from resnet import NetworkMethods
 from options import args_parser
 from update import LocalUpdate, save_protos, LocalTest, test_inference_new_het_lt, test_inference_new_het_lt_edit
-from models import CNNMnist, CNNFemnist
+from models import CNNMnistClasses, CNNFemnistClasses
 from utils import get_dataset, average_weights, exp_details, proto_aggregation, agg_func, average_weights_per, average_weights_sem, agg_func_edit, proto_aggregation_edit
 
 model_urls = {
@@ -33,6 +33,8 @@ model_urls = {
     'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
     'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
     'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+    'mobilnetV2': 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth',
+    'shufflenet_v2' : 'https://download.pytorch.org/models/shufflenetv2_x0.5-f707e7126e.pth',
 }
 
 def FedProto_taskheter(args, train_dataset, test_dataset, user_groups, user_groups_lt, local_model_list, classes_list):
@@ -230,36 +232,49 @@ if __name__ == '__main__':
         if args.dataset == 'mnist':
             #异构模型
             if args.mode == 'model_heter':
-                if i<7:
-                    args.out_channels = 18
-                elif i>=7 and i<14:
-                    args.out_channels = 20
-                else:
-                    args.out_channels = 22
+                # if i<7:
+                #     args.out_channels = 18
+                # elif i>=7 and i<14:
+                #     args.out_channels = 20
+                # else:
+                #     args.out_channels = 22
+                args.out_channels = 20
             #非异构模型
             else:
                 args.out_channels = 20
 
-            local_model = CNNMnist(args=args)
+            # local_model = CNNMnist(args=args)
+
+            random_class = random.choice(CNNMnistClasses)
+            local_model = random_class(args=args)
 
         elif args.dataset == 'femnist':
             if args.mode == 'model_heter':
-                if i<7:
-                    args.out_channels = 18
-                elif i>=7 and i<14:
-                    args.out_channels = 20
-                else:
-                    args.out_channels = 22
+                # if i<7:
+                #     args.out_channels = 18
+                # elif i>=7 and i<14:
+                #     args.out_channels = 20
+                # else:
+                #     args.out_channels = 22
+                args.out_channels = 20
             else:
                 args.out_channels = 20
-            local_model = CNNFemnist(args=args)
+            # local_model = CNNFemnist(args=args)
+            random_class = random.choice(CNNFemnistClasses)
+            local_model = random_class(args=args)
 
         elif args.dataset == 'cifar100' or args.dataset == 'cifar10':
             if args.mode == 'model_heter':
-                if i<10:
-                    args.stride = [1,4]
-                else:
-                    args.stride = [2,2]
+                # if i<10:
+                #     args.stride = [1,4]
+                # else:
+                #     args.stride = [2,2]
+                args.stride = [2,2]
+                random_method = random.choice(NetworkMethods)
+                network = random_method()
+                initial_weight = model_zoo.load_url(model_urls[network.__class__.__name__])
+                local_model = networks
+
             else:
                 args.stride = [2, 2]
             resnet = resnet18(args, pretrained=False, num_classes=args.num_classes)

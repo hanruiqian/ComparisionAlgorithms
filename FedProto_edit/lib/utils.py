@@ -28,6 +28,21 @@ trans_cifar100_val = transforms.Compose([transforms.ToTensor(),
                                          transforms.Normalize(mean=[0.507, 0.487, 0.441],
                                                               std=[0.267, 0.256, 0.276])])
 
+def init_nets(n_parties,nets_name_list):
+    nets_list = {net_i: None for net_i in range(n_parties)}
+    for net_i in range(n_parties):
+        net_name = nets_name_list[net_i]
+        if net_name=='ResNet10':
+            net = ResNet10()
+        elif net_name =='ResNet12':
+            net = ResNet12()
+        elif net_name =='ShuffleNet':
+            net = ShuffleNetG2()
+        elif net_name =='Mobilenetv2':
+            net = MobileNetV2()
+        nets_list[net_i] = net
+    return nets_list
+
 def get_dataset(args, n_list, k_list):
     """ Returns train and test datasets and a user group which is a dict where
     the keys are the user index and the values are the corresponding data for

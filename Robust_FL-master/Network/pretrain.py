@@ -109,7 +109,6 @@ if __name__ =='__main__':
         net_dataidx_map[index]= idxes
     logger.info(net_dataidx_map)
     net_list = init_nets(n_parties=N_Participants,nets_name_list=Nets_Name_List)
-
     logger.info('Pretrain Participants Models')
     for index in range(N_Participants):
         train_dl_local ,test_dl, train_ds_local, test_ds = get_dataloader(dataset=Dataset_Name,datadir=Dataset_Dir,train_bs=TrainBatchSize,test_bs=TestBatchSize,dataidxs=net_dataidx_map[index], noise_type=Noise_type, noise_rate=Noise_rate)

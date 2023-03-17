@@ -1,7 +1,8 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 import torch.nn.functional as F
-
+import models.mobilnet_v2 as Mobilnet_v2
+import models.ShuffleNetV2 as ShuffleNetV2
 
 __all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
            'resnet152']
@@ -13,6 +14,8 @@ model_urls = {
     'resnet50': 'https://download.pytorch.org/models/resnet50-19c8e357.pth',
     'resnet101': 'https://download.pytorch.org/models/resnet101-5d3b4d8f.pth',
     'resnet152': 'https://download.pytorch.org/models/resnet152-b121ed2d.pth',
+    'mobilnet_v2' :'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth',
+    'shufflenet_v2' : 'https://download.pytorch.org/models/shufflenetv2_x0.5-f707e7126e.pth',
 }
 
 
@@ -222,3 +225,11 @@ def resnet152(pretrained=False, **kwargs):
     if pretrained:
         model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
     return model
+
+def mobilnet_v2(num_classes):
+    return Mobilnet_v2.MobileNetV2(num_classes)
+
+def shufflenet_v2():
+    return ShuffleNetV2.ShuffleNetV2()
+
+NetworkMethods = [resnet18, resnet34, mobilnet_v2, shufflenet_v2]
